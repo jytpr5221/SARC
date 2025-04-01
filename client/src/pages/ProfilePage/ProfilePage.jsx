@@ -1,13 +1,16 @@
 import React from 'react';
 import './ProfilePage.scss';
-import profileImg from '../../assets/NoProfileImg.png'
-import experienceLogo from '../../assets/MainLogo.svg'
-import eduLogo from '../../assets/TempImages/wallpaperflare.com_wallpaper (1).jpg'
+// import profileImg from '../../../public/NoProfileImg.png'
+import eduLogo from '../../../public/TempImages/wallpaperflare.com_wallpaper (1).jpg'
 import { FaLinkedin, FaGithub, FaEnvelope, FaPhone } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
-import ReferralCard from '../Referrals/referral_card';
-import PublicationsCard from '../PublicationsPage/PublicationsCard';
-import ActivityCard from './components/ActivityCard';
+import ActivityCard from '../../features/ProfilePageActivity/ActivityCard';
+import ExperienceItem from '../../components/ExperienceBox/ExperienceItem';
+import EducationItem from '../../components/EducationBox/EducationItem';
+import defaultProfileImg from '../../../public/NoProfileImg.png';
+
+import userData from '../../SampleData/userData.json'
+
 
 const ProfilePage = () => {
     const navigate = useNavigate();
@@ -20,20 +23,29 @@ const ProfilePage = () => {
         navigate('/PostPublication');
     };
 
+    const handleLogout = () => {
+        // Clear local storage
+        localStorage.removeItem('token');
+        // Redirect to login page
+        navigate('/login');
+    };
+
+    const user = userData.users[0];
+
     return (
         <div className="profile-container">
             <div className="profile-header">
                 <div className="cover-photo"></div>
                 <div className="profile-info">
                     <img
-                        src={profileImg}
-                        alt="Profile"
+                        src={user.profile_pic || defaultProfileImg }
+                        alt="Profile Picture"
                         className="profile-picture"
                     />
                     <div className="basic-info">
-                        <h1>John Doe</h1>
-                        <p className="title">Computer Science Student, IIT (ISM) Dhanbad</p>
-                        <p className="location">Dhanbad, Jharkhand</p>
+                        <h1>{user && user.full_name}</h1>
+                        <p className="title">{user && user.designation}</p>
+                        <p className="location">{user && (`${user.location.city}, ${user.location.country}`)}</p>
                         {/* <div className="social-links">
               <a href="#"><FaLinkedin /></a>
               <a href="#"><FaGithub /></a>
@@ -43,71 +55,57 @@ const ProfilePage = () => {
                     </div>
 
                     {/* activate post referral for alumni user only */}
-                    <button
+                    {user && user.user_type == "alumni" && (<button
                         className="post-btn referral"
                         onClick={handlePostReferral}
                     >
                         Post Referral
-                    </button>
+                    </button>)}
 
                     {/* activate post publications for professor only */}
-                    <button
+                    {user && user.user_type == "professor" && (<button
                         className="post-btn"
                         onClick={handlePostPublication}
                     >
                         Post Publication
-                    </button>
+                    </button>)}
                 </div>
             </div>
 
             <div className="profile-content">
                 <section className="about">
                     <h2>About</h2>
-                    <p>Final year Computer Science student at IIT (ISM) Dhanbad with a passion for software development and problem-solving.</p>
+                    <p>{user && user.about}</p>
                 </section>
 
                 <section className="experience">
                     <h2>Experience</h2>
-                    <div className="experience-item">
-                        <div className="exp-header">
-                            <div className="company-logo">
-                                <img src={experienceLogo} alt="Company Logo" />
-                            </div>
-                            <div className="exp-details">
-                                <h3>Software Engineering Intern</h3>
-                                <p className="company-name">Company Name</p>
-                                <p className="duration">Jun 2023 - Aug 2023 · 3 mos</p>
-                                <p className="location">Bengaluru, Karnataka, India</p>
-                            </div>
-                        </div>
-                        <div className="exp-description">
-                            <ul>
-                                <li>Developed and maintained web applications</li>
-                                <li>Collaborated with cross-functional teams</li>
-                                <li>Improved application performance by 40%</li>
-                            </ul>
-                        </div>
-                    </div>
+                    {user.experience.map((Exp_num, index) => (
+                        <ExperienceItem data={Exp_num} key={index} />
+                    ))}
+                    {/* {user.experience && (<ExperienceItem data={user.experience} />)} */}
+
+
                 </section>
 
-                <section className="education">
+                {user.education && (<section className="education">
                     <h2>Education</h2>
-                    <div className="education-item">
-                        <div className="edu-header">
-                            <div className="institute-logo">
-                                <img src={eduLogo} alt="Institute Logo" />
-                            </div>
-                            <div className="edu-details">
-                                <h3>Indian Institute of Technology (ISM) Dhanbad</h3>
-                                <p className="degree">Bachelor of Technology - BTech, Computer Science</p>
-                                <p className="duration">2020 - 2024</p>
-                                <p className="grades">CGPA: 8.5/10</p>
-                            </div>
-                        </div>
-                    </div>
-                </section>
+                    {user.education.map((EduItem, index) => (
+                        <EducationItem data={EduItem} key={index} />
+                    ))}
+                    {/* <EducationItem /> */}
+                </section>)}
 
-                <ActivityCard />
+                {/* <ActivityCard /> */}
+
+                <div className="logout-section">
+                    <button 
+                        className="logout-btn"
+                        onClick={handleLogout}
+                    >
+                        Logout
+                    </button>
+                </div>
             </div>
         </div>
     );
