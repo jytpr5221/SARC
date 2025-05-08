@@ -1,27 +1,25 @@
 import { Navigate } from "react-router-dom";
-import HomePage from '../pages/HomePage/HomePage';
-import Achievements from '../pages/News/AchievementsPage';
-import EventsPage from '../pages/News/EventsPage';
-import ReferralPage from '../pages/Referrals/ReferralPage';
-import PublicationsPage from '../pages/PublicationsPage/PublicationsPage';
-import LoginPage from '../pages/LoginPage/LoginPage';
-import ProfilePage from '../pages/ProfilePage/ProfilePage';
-import SeminarsPage from '../pages/News/SeminarsPage';
-import PostReferral from '../pages/PostReferral/PostReferral';
-import PostPublication from '../pages/PostPublication/PostPublications';
+import HomePage from "../pages/HomePage/HomePage";
+import News from "../pages/News/News";
+import ReferralPage from "../pages/Referrals/ReferralPage";
+import PublicationsPage from "../pages/PublicationsPage/PublicationsPage";
+import ProfilePage from "../pages/ProfilePage/ProfilePage";
+import PostReferral from "../pages/PostReferral/PostReferral";
+import PostPublication from "../pages/PostPublication/PostPublications";
 
+// These routes are now also protected but categorized as "main content"
 export const appRoutes = [
   {
     path: "/",
     element: <HomePage />,
   },
   {
-    path: "/achievements",
-    element: <Achievements />,
+    path: "/news",
+    element: <Navigate to="/news/events" replace />,
   },
   {
-    path: "/events",
-    element: <EventsPage />,
+    path: "/news/:tab",
+    element: <News />,
   },
   {
     path: "/referrals",
@@ -31,32 +29,50 @@ export const appRoutes = [
     path: "/publications",
     element: <PublicationsPage />,
   },
+  // Legacy URL support - redirect old URLs to the new News component
   {
-    path: "/news",
-    element: <Navigate to="/events" />,
+    path: "/events",
+    element: <Navigate to="/news/events" replace />,
   },
   {
-    path: "/signup",
-    element: <LoginPage />,
+    path: "/achievements",
+    element: <Navigate to="/news/achievements" replace />,
   },
+  {
+    path: "/seminars",
+    element: <Navigate to="/news/seminars" replace />,
+  },
+];
+
+// User-specific and content creation routes
+export const protectedRoutes = [
+  // User profile
   {
     path: "/profile",
     element: <ProfilePage />,
   },
   {
-    path: "/seminars",
-    element: <SeminarsPage />,
+    path: "/profile/:id",
+    element: <ProfilePage />,
   },
+
+  // Content creation
   {
-    path: "/PostReferrals",
+    path: "/post-referral",
     element: <PostReferral />,
   },
   {
-    path: "/PostPublication",
+    path: "/post-publication",
     element: <PostPublication />,
   },
+
+  // Legacy URL support
   {
-    path: "*",
-    element: <Navigate to="/" />,
-  }
+    path: "/PostReferrals",
+    element: <Navigate to="/post-referral" replace />,
+  },
+  {
+    path: "/PostPublication",
+    element: <Navigate to="/post-publication" replace />,
+  },
 ];
